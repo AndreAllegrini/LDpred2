@@ -6,9 +6,6 @@ Please before using check out the tutorial by the developer: https://privefl.git
 
 Here you can find a session from the London Genetic Network Methods where Florian Privé discusses the method and options in more detail: https://osf.io/4cqwf/
 
-For questions/bugs please raise an issue or contact: a.allegrini [at] ucl.ac.uk 
-
-
 Files description: 
 
 * scripts/exclHapMap.sh : subset genetic dataset to HapMap3+ SNPs (map_ref/map_hm3_plus.rds) 
