@@ -1,0 +1,9 @@
+see https://privefl.github.io/bigsnpr/articles/LDpred2.html
+
+HapMap3+ variants with independent LD blocks
+
+# $pos is in build GRCh37 / hg19, but we provide positions in 2 other builds
+info <- readRDS(runonce::download_file(
+  "https://figshare.com/ndownloader/files/37802721",
+  dir = "tmp-data", fname = "map_hm3_plus.rds"))
+str(info)
