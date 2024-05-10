@@ -26,9 +26,7 @@ Example GWAS.csv for two summary statistics:
 >
 > MDD.gz,TRUE
 
-<<<<<<< HEAD
 The job script will have to be modified manually for the number of PRS you wish to generate `#$ -t 1-[number of PRS]` e.g. `#$ -t 1-2`
->>>>>>> ed80cb01324285cd98e3cc90005d8515db1a1cd6
 
 Example usage:
 
