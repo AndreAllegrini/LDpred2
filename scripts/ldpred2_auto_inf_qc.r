@@ -194,9 +194,14 @@ cat(" N = ", dim(info_snp)[1], "SNPs have been matched with reference data (i.e.
 #drop NAs and make sure order is the same with SD file below
 info_snp <- tidyr::drop_na(tibble::as_tibble(info_snp))
 
+#chi-squared GWAS
 chi2 <- with(info_snp, (beta / beta_se)^2)
-cat("GWAS chi^2 = ",mean(chi2,na.rm=T),".\n",sep='',file=file_log,append=TRUE)  
+cat("Mean Chi^2 = ",mean(chi2,na.rm=T),".\n",sep='',file=file_log,append=TRUE)  
 
+
+#lambda gc 
+lgc <- median(chi2,na.rm=T)/qchisq(0.5,1)
+cat("Lambda GC = ",lgc,".\n",sep='',file=file_log,append=TRUE)  
 
 #SD REFERENCE
 
@@ -365,6 +370,15 @@ cat("Running LDSC...\n"," ","\n",file=file_log,append=TRUE)
 h2_est <- ldsc[["h2"]]
 
 cat(paste(names(ldsc),ldsc, sep ="=", collapse="; "),"\n"," ","\n", file=file_log, append=TRUE)
+
+#ldsc ratio 
+
+ldsc_int <- ldsc[["int"]]
+mchi2 <- mean(chi2,na.rm=T)
+
+ldscRATIO <- (ldsc_int - 1) /  (mchi2 - 1)
+
+cat("Ratio = ",ldscRATIO,".\n",sep='',file=file_log,append=TRUE)  
 
 
 cat("Running sparse matrix...\n"," ","\n",file=file_log,append=TRUE)
