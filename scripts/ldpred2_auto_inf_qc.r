@@ -120,7 +120,7 @@ if("MAF" %in% colnames(sumstats)) {
   
   sumstats$MAF <- ifelse(sumstats$MAF <= .5, sumstats$MAF, (1-sumstats$MAF))
   
-  cat("N = ", sum(sumstats$MAF < 0.01), "have been discarded because MAF < 0.01 ","\n", sep='',file=file_log,append=TRUE)
+  cat("N = ", sum(sumstats$MAF < 0.01), " have been discarded because MAF < 0.01 ","\n", sep='',file=file_log,append=TRUE)
   
   sumstats <-  sumstats[sumstats$MAF >= 0.01 , ]
   
@@ -131,7 +131,7 @@ if("MAF" %in% colnames(sumstats)) {
 ## filter omn INFO if present
 if("INFO" %in% colnames(sumstats)) {
   
-  cat("N = ", sum(sumstats$INFO < 0.6), "have been discarded because INFO < 0.6 ","\n", sep='',file=file_log,append=TRUE)
+  cat("N = ", sum(sumstats$INFO < 0.6), " have been discarded because INFO < 0.6 ","\n", sep='',file=file_log,append=TRUE)
   
   sumstats <-  sumstats[sumstats$INFO >= 0.6,]
   
@@ -372,14 +372,12 @@ h2_est <- ldsc[["h2"]]
 cat(paste(names(ldsc),ldsc, sep ="=", collapse="; "),"\n"," ","\n", file=file_log, append=TRUE)
 
 #ldsc ratio 
-
 ldsc_int <- ldsc[["int"]]
 mchi2 <- mean(chi2,na.rm=T)
 
 ldscRATIO <- (ldsc_int - 1) /  (mchi2 - 1)
 
-cat("Ratio = ",ldscRATIO,".\n",sep='',file=file_log,append=TRUE)  
-
+cat("Ratio = ",ldscRATIO,".\n"," ","\n",file=file_log,append=TRUE)  
 
 cat("Running sparse matrix...\n"," ","\n",file=file_log,append=TRUE)
 
