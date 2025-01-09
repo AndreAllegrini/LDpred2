@@ -6,7 +6,10 @@ Please before using check out the tutorial by the developer: <https://privefl.gi
 
 Here you can find a session from the London Genetic Network Methods where Florian Privé discusses the method and options in more detail: <https://osf.io/4cqwf/>
 
-Files description:
+
+---
+
+## Files description:
 
 -   `scripts/exclHapMap.sh` : subset genetic dataset to HapMap3+ SNPs (map_ref/map_hm3_plus.rds)
 
@@ -27,8 +30,8 @@ Example GWAS.csv for two summary statistics:
 > MDD.gz,TRUE
 
 The job script will have to be modified manually for the number of PRS you wish to generate `#$ -t 1-[number of PRS]` e.g. `#$ -t 1-2`
----
-## Example usage:
+
+Example usage:
 
 > #!/bin/bash -l
 >
@@ -110,7 +113,7 @@ NOTE: I use UKB as default LD reference panel, avialable at: <https://figshare.c
 
 --- 
 
-# Output 
+## Output: 
 
 The script generates a folder within the specified output directory containing the following files:
 
@@ -126,7 +129,7 @@ auto model: *_pred_auto.txt
 
 *Log File*
 
-A log file (*.log) documenting quality control (QC) steps and details about the summary statistics.
+A log file (*.log) documenting QC steps and details about the summary statistics.
 
                   
 
