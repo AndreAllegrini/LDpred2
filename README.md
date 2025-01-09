@@ -27,8 +27,8 @@ Example GWAS.csv for two summary statistics:
 > MDD.gz,TRUE
 
 The job script will have to be modified manually for the number of PRS you wish to generate `#$ -t 1-[number of PRS]` e.g. `#$ -t 1-2`
-
-Example usage:
+---
+## Example usage:
 
 > #!/bin/bash -l
 >
@@ -47,8 +47,8 @@ Example usage:
 -   `scripts/ldpred2_auto_inf_qc.r` : this is the actual LDpred2 script including the recommended QC + some optional light QC. Please look at flags and defaults below:
 
     -   Usage: `Rscript --vanilla ldpred2_auto_inf_qc.r -h`
-
-Options:
+---
+## Options:
 
     -s CHARACTER, --sumstats=CHARACTER
         Name of GWAS summary statistics.
@@ -107,3 +107,27 @@ Options:
         
 
 NOTE: I use UKB as default LD reference panel, avialable at: <https://figshare.com/articles/dataset/LD_reference_for_HapMap3_/21305061>
+
+--- 
+
+# Output 
+
+The script generates a folder within the specified output directory containing the following files:
+
+*Beta Weights*
+
+infinitesimal model: *_beta_inf.txt
+auto model: *_final_beta_auto.txt
+
+*Polygenic Scores*
+
+infinitesimal model: *_pred_inf.txt
+auto model: *_pred_auto.txt
+
+*Log File*
+
+A log file (*.log) documenting quality control (QC) steps and details about the summary statistics.
+
+                  
+
+
