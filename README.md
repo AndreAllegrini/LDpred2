@@ -120,11 +120,13 @@ The script generates a folder within the specified output directory containing t
 *Beta Weights*
 
 infinitesimal model: *_beta_inf.txt
+
 auto model: *_final_beta_auto.txt
 
 *Polygenic Scores*
 
 infinitesimal model: *_pred_inf.txt
+
 auto model: *_pred_auto.txt
 
 *Log File*
