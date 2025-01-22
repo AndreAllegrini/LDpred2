@@ -4,7 +4,7 @@ Workflow to generate `LDpred2` (-auto and infinitesimal) scores.
 
 Please before using check out the tutorial by the developer: <https://privefl.github.io/bigsnpr/articles/LDpred2.html>
 
----
+------------------------------------------------------------------------
 
 ## Files description:
 
@@ -46,26 +46,26 @@ Example usage:
 
 -   `scripts/ldpred2_auto_inf_qc.r` : this is the actual LDpred2 script including the recommended QC + some optional light QC. Please look at flags and defaults below:
 
--   Usage: `Rscript --vanilla ldpred2_auto_inf_qc.r -h` 
+-   Usage: `Rscript --vanilla ldpred2_auto_inf_qc.r -h`
 
----
+------------------------------------------------------------------------
 
 ## Output:
 
 The script generates a folder within the specified output directory containing the following files:
 
-*Beta Weights*
+*Weights*
 
-infinitesimal model: \*\_beta_inf.txt
+-   infinitesimal model: \*\_beta_inf.txt
 
-auto model: \*\_final_beta_auto.txt
+-   auto model: \*\_final_beta_auto.txt
 
-*Polygenic Scores*
+*Polygenic scores*
 
-infinitesimal model: \*\_pred_inf.txt
+-   infinitesimal model: \*\_pred_inf.txt
 
-auto model: \*\_pred_auto.txt
+-   auto model: \*\_pred_auto.txt
 
 *Log File*
 
-A log file (\*.log) documenting QC steps and details about the summary statistics.
+-   A log file (\*.log) documenting QC steps and details about the summary statistics.
