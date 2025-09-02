@@ -92,7 +92,7 @@ geno = opt$geno
 #checks
 
 # Sumstats not found
-sumstats_path <- file.path(sumstatDir, opt$sumstats)
+sumstats_path <- file.path(opt$d, opt$s)
 if (!file.exists(sumstats_path)) {
   stop("Sumstats file not found at: ", sumstats_path, call. = FALSE)
 }
@@ -135,9 +135,6 @@ cat(paste0("Analyses started at ", start),"\n"," ","\n", file=file_log,append=TR
 cat("Reading: ", opt$s, " sumstats.", "\n"," ","\n", sep='',file=file_log,append=TRUE) 
 
 # load sumstats and convert to LDpred header format + calculate effective sample size 
-
-
-sumstats_path <- file.path(opt$sdir, opt$s)
 
 sumstats <- bigreadr::fread2(input = sumstats_path)
 
