@@ -161,7 +161,7 @@ cat("Starting sumstats QC...","\n"," ","\n", file=file_log,append=TRUE)
 
 
 # filter out duplicates
-dups <- vctrs::vec_duplicate_detect(sumstats[, c("chr","pos")])
+dups <- vctrs::vec_duplicate_detect(sumstats[, c("CHR", "BP")])
 
 sumstats <- sumstats[!dups, ]
 
