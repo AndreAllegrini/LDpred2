@@ -92,15 +92,20 @@ geno = opt$geno
 #checks
 
 # Sumstats not found
-sumstats_path <- file.path(opt$d, opt$s)
+sumstats_path <- file.path(opt$sdir, opt$sumstats)
 if (!file.exists(sumstats_path)) {
   stop("Sumstats file not found at: ", sumstats_path, call. = FALSE)
 }
 
-# Lift option check
-lift_val <- tolower(opt$lift)
-if (!lift_val %in% c("hg18", "hg38")) {
-  stop("--lift must be one of: 'hg18', 'hg38'. You gave: ", opt$lift, call. = FALSE)
+lift_val <- opt$lift
+if (lift_val == "FALSE") lift_val <- FALSE
+if (!isFALSE(lift_val)) {
+  lift_val <- tolower(lift_val)# only if not FALSE
+}
+
+
+if (!isFALSE(lift_val) && !lift_val %in% c("hg18","hg38")) {
+  stop("--lift must be one of: 'hg18', 'hg38', FALSE. You gave: ", opt$lift, call. = FALSE)
 }
 #opt$lift <- lift_val
 
@@ -250,6 +255,7 @@ map_ldref <- readRDS(paste0(misc_path,"map_hm3_plus.rds")) #read reference map
     target_build <- "hg19"  #no lifting
   } else {
     target_build <- lift_val  # user specified build
+    map_ldref$pos_hg19 <- map_ldref$pos # create hg19 pos column for consistency - easy fix otherwise merge breaks
   }
   
   # Harmonize sumstats to target_build
@@ -261,7 +267,7 @@ map_ldref <- readRDS(paste0(misc_path,"map_hm3_plus.rds")) #read reference map
     
     sumstats <- merge(
       sumstats,
-      map_ldref[, c("chr", "pos", "pos_hg18", "pos_hg38")],
+      map_ldref[, c("chr", "pos", "pos_hg18","pos_hg19", "pos_hg38")],
       by.x = c("chr", "pos"),
       by.y = c("chr", paste0("pos_", max_build)),
       all.x = TRUE,
