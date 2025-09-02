@@ -17,7 +17,7 @@ library(data.table)
 option_list = list(
   make_option(c("-s", "--sumstats"), type="character", default=NULL, 
               help=
-              "Name of GWAS summary statistics.\n
+                "Name of GWAS summary statistics.\n
                 Note sumstats should have *at least* the following header:\n
                 case/control traits: CHR BP A2 A1 NCAS NCON BETA SE \n
                 continuous traits: CHR BP A2 A1 N BETA SE\n", metavar="character"),
@@ -115,7 +115,7 @@ opt$type <- isTRUE(opt$type)
 
 start <- Sys.time() #start time
 
-file_log <- paste0(opt$s,".log") 
+file_log <- paste0(opt$sumstats,".log") 
 
 file.create(file_log) #create log file
 
@@ -137,7 +137,7 @@ sink()
 
 cat(paste0("Analyses started at ", start),"\n"," ","\n", file=file_log,append=TRUE)
 
-cat("Reading: ", opt$s, " sumstats.", "\n"," ","\n", sep='',file=file_log,append=TRUE) 
+cat("Reading: ", opt$sumstats, " sumstats.", "\n"," ","\n", sep='',file=file_log,append=TRUE) 
 
 # load sumstats and convert to LDpred header format + calculate effective sample size 
 
@@ -150,7 +150,6 @@ cat("Loaded sumstats have: ", dim(sumstats)[1], " rows and ", dim(sumstats)[2], 
 
 cat("Sumstats header is: ", paste(names(sumstats), collapse = " ", sep = " "), "\n"," ","\n", sep="",file=file_log,append=TRUE) 
 
-
 # basic QC 
 
 #to add discard sample N whe .6 < .9 quant 
@@ -159,6 +158,18 @@ cat("Sumstats header is: ", paste(names(sumstats), collapse = " ", sep = " "), "
 
 
 cat("Starting sumstats QC...","\n"," ","\n", file=file_log,append=TRUE)  
+
+
+# filter out duplicates
+dups <- vctrs::vec_duplicate_detect(sumstats[, c("chr","pos")])
+
+sumstats <- sumstats[!dups, ]
+
+#dup_count <- nrow(sumstats[duplicated(sumstats[, c("chr","pos")]), ])
+
+
+cat("There were: ", sum(dups)," duplicated physical positions in GWAS data.\n" ," ","\n", sep='',file=file_log,append=TRUE)
+
 
 # filter on MAF if present 
 if ("MAF" %in% colnames(sumstats)) {
@@ -192,7 +203,6 @@ if ("INFO" %in% colnames(sumstats)) {
 } else {
   cat("No INFO column provided.\n", file = file_log, append = TRUE)
 }
-
 
 
 # effective sample size
@@ -236,53 +246,51 @@ map_ldref <- readRDS(paste0(misc_path,"map_hm3_plus.rds")) #read reference map
 
 
 # update build if needed (to hg18 or hg38) using positions for hapmap3+ set provided in ref file
-  
-  # check overlap with all builds
 
-  overlap_hg18 <- sum(paste0(sumstats$chr, ":", sumstats$pos) %in% paste0(map_ldref$chr, ":", map_ldref$pos_hg18))
-  overlap_hg19 <- sum(paste0(sumstats$chr, ":", sumstats$pos) %in% paste0(map_ldref$chr, ":", map_ldref$pos))
-  overlap_hg38 <- sum(paste0(sumstats$chr, ":", sumstats$pos) %in% paste0(map_ldref$chr, ":", map_ldref$pos_hg38))
+# check overlap with all builds
+
+overlap_hg18 <- sum(paste0(sumstats$chr, ":", sumstats$pos) %in% paste0(map_ldref$chr, ":", map_ldref$pos_hg18))
+overlap_hg19 <- sum(paste0(sumstats$chr, ":", sumstats$pos) %in% paste0(map_ldref$chr, ":", map_ldref$pos))
+overlap_hg38 <- sum(paste0(sumstats$chr, ":", sumstats$pos) %in% paste0(map_ldref$chr, ":", map_ldref$pos_hg38))
+
+overlaps <- c(hg18 = overlap_hg18, hg19 = overlap_hg19, hg38 = overlap_hg38)
+max_build <- names(which.max(overlaps))
+
+cat("Sumstats overlap most with build:", max_build, "\n", 
+    "Overlaps: hg18 =", overlap_hg18, ", hg19 =", overlap_hg19, ", hg38 =", overlap_hg38, "\n",
+    file = file_log, append = TRUE)
+
+# target set build
+if (isFALSE(lift_val)) {
+  target_build <- "hg19"  #no lifting
+} else {
+  target_build <- lift_val  # user specified build
+  map_ldref$pos_hg19 <- map_ldref$pos # create hg19 pos column for consistency - easy fix otherwise merge breaks
+}
+
+# Harmonize sumstats to target_build
+if (max_build != target_build) {
+  # Merge sumstats with reference to lift positions
   
-  overlaps <- c(hg18 = overlap_hg18, hg19 = overlap_hg19, hg38 = overlap_hg38)
-  max_build <- names(which.max(overlaps))
-  
-  cat("Sumstats overlap most with build:", max_build, "\n", 
-      "Overlaps: hg18 =", overlap_hg18, ", hg19 =", overlap_hg19, ", hg38 =", overlap_hg38, "\n",
-      file = file_log, append = TRUE)
-  
-  # target set build
-  if (isFALSE(lift_val)) {
-    target_build <- "hg19"  #no lifting
-  } else {
-    target_build <- lift_val  # user specified build
-    map_ldref$pos_hg19 <- map_ldref$pos # create hg19 pos column for consistency - easy fix otherwise merge breaks
-  }
-  
-  # Harmonize sumstats to target_build
-  if (max_build != target_build) {
-    # Merge sumstats with reference to lift positions
-    pos_cols <- c("chr", "pos")  
-    
-    if (target_build != "hg19") pos_cols <- c(pos_cols, paste0("pos_", target_build))
+  if (target_build != "hg19") {
     
     sumstats <- merge(
       sumstats,
       map_ldref[, c("chr", "pos", "pos_hg18","pos_hg19", "pos_hg38")],
       by.x = c("chr", "pos"),
       by.y = c("chr", paste0("pos_", max_build)),
-      all.x = TRUE,
+      all = FALSE,
       sort = FALSE
     )
-      
-      sumstats$pos <- sumstats[[paste0("pos_", target_build)]]
+    
+    sumstats$pos <- sumstats[[paste0("pos_", target_build)]]
     
   }
   
-  
   # Update map_ldref positions to target_build
   map_ldref$pos <- if (target_build == "hg19") map_ldref$pos else map_ldref[[paste0("pos_", target_build)]]
-  
-  
+}
+
 info_snp <- tibble::as_tibble(snp_match(sumstats, map_ldref, return_flip_and_rev = TRUE))
 
 
@@ -349,7 +357,7 @@ qplot(sd_ldref, sd_ss, color = is_bad, alpha = I(0.5)) +
        y = "Standard deviations derived from the summary statistics",
        color = "Removed?")
 
-ggsave(paste0(tmp,"sd_", opt$s,".png"), width = 10, height = 7)
+ggsave(paste0(tmp,"sd_", opt$sumstats,".png"), width = 10, height = 7)
 
 
 df_beta <- info_snp[!is_bad, ] #remove bad SNPs
@@ -415,7 +423,7 @@ if(sum(is_bad, na.rm = T) > (length(is_bad)*0.5)) {
          y = "Standard deviations derived from the summary statistics",
          color = "Removed?")
   
-  ggsave(paste0(tmp,"sd_", opt$s,".medianN.png"), width = 10, height = 7)
+  ggsave(paste0(tmp,"sd_", opt$sumstats,".medianN.png"), width = 10, height = 7)
   
   df_beta <- info_snp[!is_bad, ] #remove bad SNPs
   
@@ -555,7 +563,7 @@ plot_grid(
   ncol = 1, align = "hv"
 )
 
-ggsave(paste0(tmp,"auto_chains_", opt$s,".png"), width = 12, height = 10)
+ggsave(paste0(tmp,"auto_chains_", opt$sumstats,".png"), width = 12, height = 10)
 
 
 # Filter outlier betas and average remaining ones - new recommended way
