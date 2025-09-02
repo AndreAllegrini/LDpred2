@@ -88,7 +88,6 @@ out_path = opt$out
 misc_path = opt$misc
 NCORES = opt$cores
 geno = opt$geno
-sumstatDir = opt$sdir
 
 #checks
 
@@ -137,7 +136,12 @@ cat("Reading: ", opt$s, " sumstats.", "\n"," ","\n", sep='',file=file_log,append
 
 # load sumstats and convert to LDpred header format + calculate effective sample size 
 
-sumstats <- bigreadr::fread2(input = paste0(sumstatDir,opt$s))
+
+sumstats_path <- file.path(opt$sdir, opt$s)
+
+sumstats <- bigreadr::fread2(input = sumstats_path)
+
+#sumstats <- bigreadr::fread2(input = paste0(sumstatDir,opt$s))
 
 cat("Loaded sumstats have: ", dim(sumstats)[1], " rows and ", dim(sumstats)[2], " columns.", "\n"," ","\n", sep="",file=file_log,append=TRUE) 
 
