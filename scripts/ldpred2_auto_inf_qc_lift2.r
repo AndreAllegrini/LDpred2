@@ -16,43 +16,36 @@ library(data.table)
 
 option_list = list(
   make_option(c("-s", "--sumstats"), type="character", default=NULL, 
-              help=
-                "Name of GWAS summary statistics.\n
+              help="Name of GWAS summary statistics.\n
                 Note sumstats should have *at least* the following header:\n
                 case/control traits: CHR BP A2 A1 NCAS NCON BETA SE \n
                 continuous traits: CHR BP A2 A1 N BETA SE\n", metavar="character"),
   
-  make_option(c("-g", "--geno"), type="character", 
-              default="/cluster/projects/p471/people/andrea/LDpred2/geno_data/genoHapMap3plus_N200k.rds", 
-              help="(Path to) Genetic dataset in .rds format.\n 
-              [default = %default]", metavar="character"),
+  make_option(c("-g", "--geno"), type="character",
+              help="path/to/bigsnp.rds\n", metavar="character"),
   
   make_option(c("-t", "--type"), type="logical", 
               default = TRUE,
-              help="Whether GWAS trait is case/control.\n 
+              help="Whether GWAS trait is case/control\n 
+              (TRUE = binary, FALSE = continuous).\n 
               [default = %default]", metavar="logical"),
   
   make_option(c("-o", "--out"), type="character", 
-              default="/cluster/projects/p471/people/andrea/LDpred2/out/", 
-              help="(Path to) Output directory.\n 
-              [default = %default]", metavar="character"),
+              help="path/to/output_dir/.\n", metavar="character"),
   
   make_option(c("-d", "--sdir"), type="character", 
-              default="/cluster/p/p471/cluster/people/andrea/LDpred2/sumstats/", 
-              help="Sumstats directory.\n 
-              [default = %default]", metavar="character"),
+              help="path/to/sumstats_dir/.\n", metavar="character"),
   
   make_option(c("-m", "--misc"), type="character", 
-              default = "/cluster/projects/p471/people/andrea/LDpred2/misc/hapmap3plus/", 
-              help = "(Path to) Directory including LD reference info file(.rds) with ld scores, and LD matrices by chromosome.\n
-              [default= %default]\n
-              Note the directory should have  the following structure:\n 
+              help = "path/to/hapmap3plus/. \n
+              Directory including LD reference info file (.rds), and LD matrices by chromosome.\n
+              Expected structure:\n 
               hapmap3plus
               ├── LDref
               │   ├── LD_with_blocks_chr1.rds
               │   ├── LD_with_blocks_chr2.rds
               │   ├── LD_with_blocks_chr3.rds
-              etc...
+                  ...
               └── map_hm3_plus.rds", metavar="character"),
   
   make_option(c("--maf"), type = "double", default = 0.01,
@@ -65,12 +58,12 @@ option_list = list(
   
   make_option(c("-l", "--lift"), type = "character",
               default = FALSE,
-              help = "Assuming test data genome build hg19. (checks for consistency)
-              If not do lift. Values: 'hg18' OR 'hg38'. [default = %default]",
+              help = "Genome build of test data (assumes hg19 by default). 
+              Provide 'hg18' or 'hg38' if lift-over needed. [default = %default]",
               metavar = "character"),
   
   make_option(c("-c", "--cores"), type="integer", 
-              default = max(1, parallel::detectCores() - 1), 
+              default = 8, 
               help="Number of cores. \n 
               [default = %default]", metavar="integer")
 ); 
