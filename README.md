@@ -14,65 +14,76 @@ Please before using check out the tutorial by the developer: <https://privefl.gi
 
 -   `scripts/basic_geno_prep.sh` : job submission script for prep_hapmap3plus_impute.r
 
--   `scripts/ldpred2_auto_inf_qc.r` : this is the actual LDpred2 script including the recommended QC + some optional light QC. Please look at flags and defaults below:
+-   `scripts/ldpred2_auto_inf_qc_lift2.r` : master script
 
-    -   Usage: `Rscript --vanilla ldpred2_auto_inf_qc.r -h`
+    -   Usage: `Rscript --vanilla ldpred2_auto_inf_qc_lift2.r -h`
 
 ```         
-Options: -s CHARACTER, --sumstats=CHARACTER Name of GWAS summary statistics.
+Options:
+	-s CHARACTER, --sumstats=CHARACTER
+		Name of GWAS summary statistics.
 
-            Note sumstats should have *at least* the following header:
+                Note sumstats should have *at least* the following header:
 
-            case/control traits: CHR BP A2 A1 NCAS NCON BETA SE 
+                case/control traits: CHR BP A2 A1 NCAS NCON BETA SE 
 
-            continuous traits: CHR BP A2 A1 N BETA SE
+                continuous traits: CHR BP A2 A1 N BETA SE
 
 
--g CHARACTER, --geno=CHARACTER
-    (Path to) Genetic dataset in .rds format.
+	-g CHARACTER, --geno=CHARACTER
+		path/to/bigsnp.rds
 
-          [default = /cluster/projects/p471/people/andrea/LDpred2/geno_data/genoHapMap3plus_N200k.rds]
 
--t LOGICAL, --type=LOGICAL
-    Whether GWAS trait is case/control.
+	-t LOGICAL, --type=LOGICAL
+		Whether GWAS trait is case/control
+ 
+              (TRUE = binary, FALSE = continuous).
+ 
+              [default = TRUE]
 
-          [default = TRUE]
+	-o CHARACTER, --out=CHARACTER
+		path/to/output_dir/.
 
--o CHARACTER, --out=CHARACTER
-    (Path to) Output directory.
 
-          [default = /cluster/projects/p471/people/andrea/LDpred2/out/]
+	-d CHARACTER, --sdir=CHARACTER
+		path/to/sumstats_dir/.
 
--d CHARACTER, --Sdir=CHARACTER
-    Sumstats directory.
 
-          [default = /cluster/p/p471/cluster/people/andrea/LDpred2/sumstats/]
+	-m CHARACTER, --misc=CHARACTER
+		path/to/hapmap3plus/. 
 
--m CHARACTER, --misc=CHARACTER
-    (Path to) Directory including LD reference info file(.rds) with ld scores, and LD matrices by chromosome.
+              Directory including LD reference info file (.rds), and LD matrices by chromosome.
 
-          [default= /cluster/projects/p471/people/andrea/LDpred2/misc/hapmap3plus/]
+              Expected structure:
+ 
+              hapmap3plus
+              ├── LDref
+              │   ├── LD_with_blocks_chr1.rds
+              │   ├── LD_with_blocks_chr2.rds
+              │   ├── LD_with_blocks_chr3.rds
+                  ...
+              └── map_hm3_plus.rds
 
-          Note the directory should have  the following structure:
+	--maf=NUMERIC
+		MAF threshold for QC. [default = 0.01]
 
-          hapmap3plus
-          ├── LDref
-          │   ├── LD_with_blocks_chr1.rds
-          │   ├── LD_with_blocks_chr2.rds
-          │   ├── LD_with_blocks_chr3.rds
-          etc...
-          └── map_hm3_plus.rds
+	--info=NUMERIC
+		INFO threshold for QC. [default = 0.6]
 
--c NUMBER, --cores=NUMBER
-    Number of cores. 
+	-l CHARACTER, --lift=CHARACTER
+		Genome build of test data (assumes hg19 by default). 
+              Provide 'hg18' or 'hg38' if lift-over needed. [default = FALSE]
 
-          [default = 32]
+	-c INTEGER, --cores=INTEGER
+		Number of cores. 
+ 
+              [default = 8]
 
--h, --help
-    Show this help message and exit
+	-h, --help
+		Show this help message and exit
 ```
 
--   `scripts/subLDpred2.sh` : job submission script for `ldpred2_auto_inf_qc.R`
+-   `scripts/subLDpred2.sh` : job submission script for ldpred2_auto_inf_qc_lift2.r
 
 An array job script assuming you have a `.csv` file named 'GWAS.csv' in your working directory.
 
@@ -92,15 +103,15 @@ Example usage:
 >
 > #SBATCH --time=6:00:00
 >
-> [...]
->
 > #SBATCH --array=1-2
+>
+> ...
 >
 > sumstat=$(awk -F',' "NR==$SLURM_ARRAY_TASK_ID {print \\\$1}" \${WORKdir}/GWAS.csv) #take first column of input file
 >
 > type=$(awk -F',' "NR==$SLURM_ARRAY_TASK_ID {print \\\$2}" \${WORKdir}/GWAS.csv) #take second column of input file
 >
-> Rscript --vanilla ldpred2_auto_inf_qc.r -s \$sumstat -t \$type
+> Rscript --vanilla ldpred2_auto_inf_qc_lift2.r -s \$sumstat -t \$type ...
 
 ------------------------------------------------------------------------
 
