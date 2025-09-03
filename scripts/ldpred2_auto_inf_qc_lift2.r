@@ -78,12 +78,6 @@ option_list = list(
 opt_parser = OptionParser(option_list=option_list);
 opt = parse_args(opt_parser);
 
-#print help
-print_help(opt_parser)
-
-#print options
-print(opt)
-
 out_path = opt$out
 misc_path = opt$misc
 NCORES = opt$cores
@@ -330,8 +324,8 @@ if(opt$type == T){  #if GWAS trait is binary
   
   cat("treating GWAS trait as continuous.\n",sep='',file=file_log,append=TRUE)  
   
-  #consistent with e.g.: https://github.com/privefl/paper-misspec/blob/main/code/prepare-sumstats-bbj/height.R
-  #although assumes sd(y) = 1 (beta std 1)
+  #https://github.com/privefl/paper-misspec/blob/main/code/prepare-sumstats-bbj/height.R
+  #assumes sd(y) = 1 (beta std 1)
   #if not below sd(y) is reestimated 
   
   sd_ss = with(info_snp, 1 / sqrt(n_eff * beta_se^2 + beta^2))
@@ -368,14 +362,12 @@ cat(sum(is_bad, na.rm = T)," SNPs are bad.\n"," ","\n", sep='',file=file_log,app
 
 cat("After QC there are: ", dim(df_beta)[1], " SNPs.\n"," ","\n",sep='',file=file_log,append=TRUE)
 
-#bit to be fixed/double checked:
-
-# stop if more than 50% variants have discordant SD
+# Warning if more than 50% variants have discordant SD
 # see also https://github.com/privefl/bigsnpr/issues/281
 if(sum(is_bad, na.rm = T) > (length(is_bad)*0.5)) {
   
-  cat("WARNING: More than half the variants had a discordant SD. Imputing Neff.\n
-      Double check your input sumstats: reference population, per-variant sample size, effective N.\n\n",file=file_log,append=TRUE) # see: https://github.com/privefl/bigsnpr/issues/281.
+  cat("WARNING: More than half the variants had a discordant SD. Imputing Neff for binary trait.\n
+      Double check your input sumstats: reference population/per-variant sample size/effective N.\n\n",file=file_log,append=TRUE) # see: https://github.com/privefl/bigsnpr/issues/281.
   if(opt$type == T){
     #see eq 4 and 5 here  https://www.sciencedirect.com/science/article/pii/S2666247722000525?via%3Dihub#sec3.2
     
@@ -390,8 +382,8 @@ if(sum(is_bad, na.rm = T) > (length(is_bad)*0.5)) {
     
   }else{
     
-    cat("WARNING: Be extra sceptic of median imputation for continuous traits.\n
-      Double check source code.\n\n",file=file_log,append=TRUE) 
+    cat("WARNING: More than half the variants had a discordant SD. Imputing Neff and estimating sd(y) for continuous trait.\n
+      Double check your input sumstats: reference population/per-variant sample size/effective N.\n\n",file=file_log,append=TRUE) 
     
     info_snp$n_eff_imp <- (1 / (sd_ldref^2 - info_snp$beta^2)) / info_snp$beta_se^2
     
