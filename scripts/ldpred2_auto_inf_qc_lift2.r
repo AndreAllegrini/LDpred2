@@ -107,11 +107,10 @@ if (!isFALSE(lift_val)) {
 if (!isFALSE(lift_val) && !lift_val %in% c("hg18","hg38")) {
   stop("--lift must be one of: 'hg18', 'hg38', FALSE. You gave: ", opt$lift, call. = FALSE)
 }
-#opt$lift <- lift_val
 
 #type
 opt$type <- isTRUE(opt$type)
-#end checks
+
 
 start <- Sys.time() #start time
 
@@ -125,9 +124,9 @@ cat(" -------------------------------------------------","\n",
     "-------------------------------------------------","\n",
     " ","\n", sep = " ", file=file_log, append=TRUE)
 
-#print help and  options
+#print  options
 sink(file = file_log, append = TRUE)
-print_help(opt_parser)
+#print_help(opt_parser)
 
 cat("#####","SELECTED OPTIONS:","#####\n"," ", "\n", file=file_log, append=TRUE)
 opt
@@ -201,7 +200,7 @@ if ("INFO" %in% colnames(sumstats)) {
   sumstats <- subset(sumstats, INFO >= opt$info | is.na(INFO))
   
 } else {
-  cat("No INFO column provided.\n", file = file_log, append = TRUE)
+  cat("No INFO column provided.\n"," ","\n", file = file_log, append = TRUE)
 }
 
 
@@ -256,8 +255,8 @@ overlap_hg38 <- sum(paste0(sumstats$chr, ":", sumstats$pos) %in% paste0(map_ldre
 overlaps <- c(hg18 = overlap_hg18, hg19 = overlap_hg19, hg38 = overlap_hg38)
 max_build <- names(which.max(overlaps))
 
-cat("Sumstats overlap most with build:", max_build, "\n", 
-    "Overlaps: hg18 =", overlap_hg18, ", hg19 =", overlap_hg19, ", hg38 =", overlap_hg38, "\n",
+cat("Sumstats overlap most with build:", max_build, "\n"," ","\n", 
+    "Overlaps: hg18 =", overlap_hg18, ", hg19 =", overlap_hg19, ", hg38 =", overlap_hg38, "\n"," ","\n",
     file = file_log, append = TRUE)
 
 # target set build
@@ -271,6 +270,9 @@ if (isFALSE(lift_val)) {
 # Harmonize sumstats to target_build
 if (max_build != target_build) {
   # Merge sumstats with reference to lift positions
+  
+  cat("Sumstats build (",max_build ,") different from target build. Lifting to:", target_build, "\n"," ","\n", 
+      file = file_log, append = TRUE)
   
   if (target_build != "hg19") {
     
