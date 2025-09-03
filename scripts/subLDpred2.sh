@@ -1,8 +1,8 @@
 #!/bin/bash -l
 #SBATCH --output=scoring.LDpred2.array_%A_%a.out
 #SBATCH --error=scoring.LDpred2.array_%A_%a.err
-#SBATCH --time=6:00:00
-#SBATCH --cpus-per-task=32
+#SBATCH --time=4:00:00
+#SBATCH --cpus-per-task=8
 #SBATCH --mem-per-cpu=8GB
 #SBATCH --array=1-2
 
