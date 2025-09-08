@@ -20,8 +20,8 @@ Please before using check out the tutorial by the developer: <https://privefl.gi
 
 ```         
 Options:
-	-s CHARACTER, --sumstats=CHARACTER
-		Name of GWAS summary statistics.
+    -s CHARACTER, --sumstats=CHARACTER
+        Name of GWAS summary statistics.
 
                 Note sumstats should have *at least* the following header:
 
@@ -30,27 +30,27 @@ Options:
                 continuous traits: CHR BP A2 A1 N BETA SE
 
 
-	-g CHARACTER, --geno=CHARACTER
-		path/to/bigsnp.rds
+    -g CHARACTER, --geno=CHARACTER
+        path/to/bigsnp.rds
 
 
-	-t LOGICAL, --type=LOGICAL
-		Whether GWAS trait is case/control
+    -t LOGICAL, --type=LOGICAL
+        Whether GWAS trait is case/control
  
               (TRUE = binary, FALSE = continuous).
  
               [default = TRUE]
 
-	-o CHARACTER, --out=CHARACTER
-		path/to/output_dir/.
+    -o CHARACTER, --out=CHARACTER
+        path/to/output_dir/.
 
 
-	-d CHARACTER, --sdir=CHARACTER
-		path/to/sumstats_dir/.
+    -d CHARACTER, --sdir=CHARACTER
+        path/to/sumstats_dir/.
 
 
-	-m CHARACTER, --misc=CHARACTER
-		path/to/hapmap3plus/. 
+    -m CHARACTER, --misc=CHARACTER
+        path/to/hapmap3plus/. 
 
               Directory including LD reference info file (.rds), and LD matrices by chromosome.
 
@@ -64,23 +64,23 @@ Options:
                   ...
               └── map_hm3_plus.rds
 
-	--maf=NUMERIC
-		MAF threshold for QC. [default = 0.01]
+    --maf=NUMERIC
+        MAF threshold for QC. [default = 0.01]
 
-	--info=NUMERIC
-		INFO threshold for QC. [default = 0.6]
+    --info=NUMERIC
+        INFO threshold for QC. [default = 0.6]
 
-	-l CHARACTER, --lift=CHARACTER
-		Genome build of test data (assumes hg19 by default). 
+    -l CHARACTER, --lift=CHARACTER
+        Genome build of test data (assumes hg19 by default). 
               Provide 'hg18' or 'hg38' if lift-over needed. [default = FALSE]
 
-	-c INTEGER, --cores=INTEGER
-		Number of cores. 
+    -c INTEGER, --cores=INTEGER
+        Number of cores. 
  
               [default = 8]
 
-	-h, --help
-		Show this help message and exit
+    -h, --help
+        Show this help message and exit
 ```
 
 -   `scripts/subLDpred2.sh` : job submission script for ldpred2_auto_inf_qc_lift2.r
@@ -134,3 +134,5 @@ The script generates a folder within the specified output directory containing t
 *Log File*
 
 -   log file (\*.log) documenting QC steps and details about the summary statistics.
+
+NOTE: I use UKB as default LD reference panel, available at: <https://figshare.com/articles/dataset/LD_reference_for_HapMap3_/21305061>
