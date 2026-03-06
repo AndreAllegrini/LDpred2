@@ -1,24 +1,22 @@
 #!/bin/bash -l
-#SBATCH --output=/cluster/projects/p471/people/andrea/LDpred2/out/rds.N200k.out
-#SBATCH --error=/cluster/projects/p471/people/andrea/LDpred2/out/rds.N200k.err
-#SBATCH --account=p471
-#SBATCH --time=12:00:00
-#SBATCH --ntasks=1
-#SBATCH --cpus-per-task=32
-#SBATCH --mem-per-cpu=8GB
+#$ -S /bin/bash
+#$ -l h_rt=02:00:00
+#$ -l mem=8G
+#$ -l tmpfs=8G
+#$ -pe smp 10
+#$ -N basic_geno_prep
+#$ -m be
 
 export OMP_NUM_THREADS=1
 export OPENBLAS_NUM_THREADS=1
 
-## Set up job enviroment:
-source /cluster/bin/jobsetup
-module purge
-module add R/3.5.0
+module -f unload compilers mpi gcc-libs
+module load r/recommended
+export R_LIBS=~/Rlibs
 
-wdPath=/cluster/projects/p471/people/andrea/LDpred2/scripts
+wdPath="/path/to/wd"
+cd ${wdPath}
 
-cd $wdPath
+echo "Running job $JOB_ID in $PWD"
 
-echo I am job $SLURM_JOBID
-
-R --file=prep_hapmap3plus_impute.r --vanilla
+R --file=${wdPath}/prep_hapmap3plus_impute.r --vanilla

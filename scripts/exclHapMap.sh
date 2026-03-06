@@ -1,17 +1,18 @@
-#!/bin/bash
-#SBATCH --output=/cluster/projects/p471/people/andrea/LDpred2/out/imp.hapmap3plus.out
-#SBATCH --error=/cluster/projects/p471/people/andrea/LDpred2/out/imp.hapmap3plus.err
-#SBATCH --account=p471
-#SBATCH --time=3:00:00
-#SBATCH --ntasks=1
-#SBATCH --cpus-per-task=8
-#SBATCH --mem-per-cpu=2GB
+#!/bin/bash -l
+#$ -S /bin/bash
+#$ -l h_rt=00:30:00
+#$ -l mem=3G
+#$ -pe smp 1
+#$ -N exclHapMap
+#$ -m be
 
-module purge
-module load plink/1.90b6.2
+module load plink/1.90b3.40
 set -o errexit
 
-IN="/cluster/projects/p471/data/genetic_data/MoBaPsychGen_v1/"
-OUT="/cluster/projects/p471/people/andrea/LDpred2/geno_data/"
+IN="/data/genotypes/"          # dir with .bed/.bim/.fam
+OUT="/data/output/"
+GENO="geno_data"              # prefix of .bed/.bim/.fam 
+LIST="/data/maps/map_hm3_plus.list" # SNP list
 
-plink --bfile ${IN}MoBaPsychGen_v1-ec-eur-batch-basic-qc --extract /cluster/projects/p471/people/andrea/LDpred2/misc/hapmap3plus/hapmap3plus.snplist --make-bed --out ${OUT}MoBaPsychGen_v1-ec-eur-batch-basic-qc-exc-hapmap3plus
+
+plink --bfile ${IN}${GENO} --extract ${LIST} --make-bed --out ${OUT}${GENO}-hapmap-only
