@@ -57,9 +57,10 @@ option_list = list(
               metavar = "numeric"),
   
   make_option(c("-l", "--lift"), type = "character",
-              default = FALSE,
-              help = "Genome build of test data (assumes hg19 by default). 
-              Provide 'hg18' or 'hg38' if lift-over needed. [default = %default]",
+              default = "hg19",
+              help = "Genome build of the test (target) genotype data.
+              Summary statistics will be automatically lifted to this build if necessary.
+              Options: hg18, hg19, hg38, or FALSE to disable lift. [default = %default]",
               metavar = "character"),
   
   make_option(c("-c", "--cores"), type="integer", 
@@ -91,8 +92,8 @@ if (!isFALSE(lift_val)) {
 }
 
 
-if (!isFALSE(lift_val) && !lift_val %in% c("hg18","hg38")) {
-  stop("--lift must be one of: 'hg18', 'hg38', FALSE. You gave: ", opt$lift, call. = FALSE)
+if (!isFALSE(lift_val) && !lift_val %in% c("hg18","hg19","hg38")) {
+  stop("--lift must be one of: 'hg18','hg38','hg38', FALSE. You gave: ", opt$lift, call. = FALSE)
 }
 
 #type
@@ -231,7 +232,7 @@ if(!is.integer(sumstats$chr)){
 map_ldref <- readRDS(paste0(misc_path,"map_hm3_plus.rds")) #read reference map
 
 
-# update build if needed (to hg18 or hg38) using positions for hapmap3+ set provided in ref file
+# update build if needed using positions for hapmap3+ set provided in ref file
 
 # check overlap with all builds
 
@@ -242,17 +243,22 @@ overlap_hg38 <- sum(paste0(sumstats$chr, ":", sumstats$pos) %in% paste0(map_ldre
 overlaps <- c(hg18 = overlap_hg18, hg19 = overlap_hg19, hg38 = overlap_hg38)
 max_build <- names(which.max(overlaps))
 
-cat("Sumstats overlap most with build:", max_build, "\n"," ","\n", 
+cat("Detected GWAS build (max overlap):", max_build, "\n"," ","\n", 
     "Overlaps: hg18 =", overlap_hg18, ", hg19 =", overlap_hg19, ", hg38 =", overlap_hg38, "\n"," ","\n",
     file = file_log, append = TRUE)
 
+
+
 # target set build
 if (isFALSE(lift_val)) {
-  target_build <- "hg19"  #no lifting
+  
+  cat("lift option = FALSE: no lift performed", "\n"," ","\n",
+      file = file_log, append = TRUE)
+  
 } else {
-  target_build <- lift_val  # user specified build
   map_ldref$pos_hg19 <- map_ldref$pos # create hg19 pos column for consistency - easy fix otherwise merge breaks
-}
+  target_build <- lift_val  # user specified build
+  
 
 # Harmonize sumstats to target_build
 if (max_build != target_build) {
@@ -261,23 +267,28 @@ if (max_build != target_build) {
   cat("Sumstats build (",max_build ,") different from target build. Lifting to:", target_build, "\n"," ","\n", 
       file = file_log, append = TRUE)
   
-  if (target_build != "hg19") {
-    
     sumstats <- merge(
       sumstats,
       map_ldref[, c("chr", "pos", "pos_hg18","pos_hg19", "pos_hg38")],
       by.x = c("chr", "pos"),
       by.y = c("chr", paste0("pos_", max_build)),
       all = FALSE,
-      sort = FALSE
-    )
+      sort = FALSE)
     
     sumstats$pos <- sumstats[[paste0("pos_", target_build)]]
-    
-  }
+
   
   # Update map_ldref positions to target_build
   map_ldref$pos <- if (target_build == "hg19") map_ldref$pos else map_ldref[[paste0("pos_", target_build)]]
+  
+  post_overlap <- sum(paste0(sumstats$chr, ":", sumstats$pos) %in% paste0(map_ldref$chr, ":", map_ldref$pos))
+  cat("Overlap after lift:", post_overlap, "\n", file=file_log, append=TRUE)
+} else {
+  
+  cat("GWAS already in target build; no lift needed\n", file=file_log, append=TRUE)
+  
+}
+  
 }
 
 info_snp <- tibble::as_tibble(snp_match(sumstats, map_ldref, return_flip_and_rev = TRUE))
