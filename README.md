@@ -22,9 +22,9 @@ Before using check out the tutorial by the developer: <https://privefl.github.io
 
 1.  **list of GWAS summary statistics .CSV** (`GWAS.csv`)
 
--   First column: list of sumstat filenames\
+-   First column: list of sumstat filenames
 
--   Second column: trait type (`TRUE` = binary, `FALSE` = continuous)\
+-   Second column: trait type (`TRUE` = binary, `FALSE` = continuous)
 
 -   No header required
 
@@ -63,7 +63,7 @@ hapmap3plus/
 | `-m, --misc` | LD reference folder (HapMap3+) | \- |
 | `--maf` | MAF threshold for QC | 0.01 |
 | `--info` | INFO threshold for QC | 0.6 |
-| `-l, --lift` | Genome build (`hg19` default; `hg18` or `hg38` if lift-over needed) | FALSE |
+| `-l, --lift` | Genome build (`hg18`, `hg19`, `hg38` FALSE) | `hg19` |
 | `-c, --cores` | Number of cores | 8 |
 | `-h, --help` | Show help message | \- |
 
