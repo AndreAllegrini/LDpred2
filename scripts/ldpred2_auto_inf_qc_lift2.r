@@ -229,6 +229,10 @@ if(!is.integer(sumstats$chr)){
 }
 
 
+#also this
+sumstats$a0 <- toupper(sumstats$a0)
+sumstats$a1 <- toupper(sumstats$a1)
+
 map_ldref <- readRDS(paste0(misc_path,"map_hm3_plus.rds")) #read reference map
 
 
